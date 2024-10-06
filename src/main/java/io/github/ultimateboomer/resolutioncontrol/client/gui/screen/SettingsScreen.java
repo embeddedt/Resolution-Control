@@ -92,9 +92,9 @@ public class SettingsScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (client.world == null) {
-            renderBackgroundTexture(context);
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        if(client.world == null) {
+            super.renderBackground(context, mouseX, mouseY, delta);
         }
 
         RenderSystem.disableDepthTest();
@@ -109,7 +109,10 @@ public class SettingsScreen extends Screen {
                 0, 0,
                 textureWidth, textureHeight
         );
+    }
 
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
         drawLeftAlignedString(context, "\u00a7r" + getTitle().getString(),

@@ -1,5 +1,7 @@
 package io.github.ultimateboomer.resolutioncontrol.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.WorldRenderer;
@@ -9,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(WorldRenderer.class)
+@Mixin(value = WorldRenderer.class, priority = 1100)
 public class WorldRendererMixin {
     @Shadow
     public Framebuffer entityOutlinesFramebuffer;
@@ -17,6 +19,20 @@ public class WorldRendererMixin {
     @Inject(at = @At("RETURN"), method = "loadEntityOutlinePostProcessor")
     private void onLoadEntityOutlineShader(CallbackInfo ci) {
         ResolutionControlMod.getInstance().resizeMinecraftFramebuffers();
+    }
+
+    @WrapMethod(method = {"loadEntityOutlinePostProcessor", "loadTransparencyPostProcessor"})
+    private void loadWithScaleFlag(Operation<Void> original) {
+        ResolutionControlMod.getInstance().setShouldScaleFlag(true);
+        original.call();
+        ResolutionControlMod.getInstance().setShouldScaleFlag(false);
+    }
+
+    @WrapMethod(method = "onResized")
+    private void resizeWithScaleFlag(int width, int height, Operation<Void> original) {
+        ResolutionControlMod.getInstance().setShouldScaleFlag(true);
+        original.call(width, height);
+        ResolutionControlMod.getInstance().setShouldScaleFlag(false);
     }
 
     @Inject(at = @At("RETURN"), method = "onResized")

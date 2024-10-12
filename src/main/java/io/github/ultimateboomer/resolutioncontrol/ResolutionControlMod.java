@@ -132,6 +132,10 @@ public class ResolutionControlMod implements ModInitializer {
 				fb,
 				text -> client.player.sendMessage(text, false));
 	}
+
+	public void setShouldScaleFlag(boolean shouldScale) {
+		this.shouldScale = shouldScale;
+	}
 	
 	public void setShouldScale(boolean shouldScale) {
 		if (shouldScale == this.shouldScale) return;
